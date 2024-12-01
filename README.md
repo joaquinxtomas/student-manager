@@ -22,7 +22,7 @@
 <h2>Instalación</h2>
 <ol>
         <li>Clona este repositorio:
-            <pre><code>git clone &lt;(https://github.com/joaquinxtomas/student-manager)&gt;</code></pre>
+            <pre><code>git clone (https://github.com/joaquinxtomas/student-manager)</code></pre>
         </li>
         <li>Configura la conexión a MySQL en tu código Java:
             <pre><code>// Ejemplo de configuración
