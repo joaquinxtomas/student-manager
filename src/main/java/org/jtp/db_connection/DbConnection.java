@@ -1,5 +1,7 @@
 package org.jtp.db_connection;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,10 +10,12 @@ public class DbConnection {
     public static Connection getConnection(){
         Connection connection = null;
 
+        Dotenv dotenv = Dotenv.load();
+
         String name_db = "students_db";
         String url = "jdbc:mysql://localhost:3306/" + name_db;
-        String username = "root";
-        String password = "46460730";
+        String username = dotenv.get("DB_USER");
+        String password = dotenv.get("DB_PASSWORD");
 
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
