@@ -21,6 +21,14 @@ public class Student {
         this.email = email;
     }
 
+    public Student(int id_student, String name, String last_name, String phonenumber, String email) {
+        this.id_student = id_student;
+        this.name = name;
+        this.last_name = last_name;
+        this.phonenumber = phonenumber;
+        this.email = email;
+    }
+
     public int getId_student() {
         return id_student;
     }

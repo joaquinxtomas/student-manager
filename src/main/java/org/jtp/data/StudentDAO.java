@@ -7,6 +7,7 @@ import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,23 +55,21 @@ public class StudentDAO {
         PreparedStatement ps;
         ResultSet rs;
         Connection conn = DbConnection.getConnection();
+        Student student = null;
 
-        Student student = new Student(id);
-
-        String strId = String.valueOf(id);
-        String sqlScript = "SELECT * FROM student WHERE id_student = " + strId;
+        String sqlScript = "SELECT * FROM student WHERE id_student = ?";
         try{
             ps = conn.prepareStatement(sqlScript);
+            ps.setInt(1,id);
             rs = ps.executeQuery();
             if(rs.next()){
+                student = new Student(id);
                 student.setName(rs.getString("name"));
                 student.setLast_name(rs.getString("last_name"));
                 student.setPhonenumber(rs.getString("phonenumber"));
                 student.setEmail(rs.getString("email"));
-            } else {
-                student = null;
             }
-        }catch(Exception e){
+        }catch(SQLException e){
             System.out.println("Error al buscar el estudiante: " + e.getMessage());
         }
 
@@ -85,23 +84,87 @@ public class StudentDAO {
         return student;
     }
 
-    public static void main(String[] args) {
+    public boolean addStudent(Student student){
+        PreparedStatement ps;
+        Connection conn = DbConnection.getConnection();
+        String sqlScript = "INSERT INTO student (name, last_name, phonenumber, email) VALUES (?, ?, ?, ?)";
+        try{
+            ps = conn.prepareStatement(sqlScript);
+            ps.setString(1, student.getName());
+            ps.setString(2, student.getLast_name());
+            ps.setString(3, student.getPhonenumber());
+            ps.setString(4, student.getEmail());
+            ps.execute();
 
-        StudentDAO studentdao = new StudentDAO();
-
-        //System.out.println("Listado de estudiantes: ");
-        //List<Student> students = studentdao.listStudents();
-
-        Student student = new Student();
-
-        Student finded = studentdao.findById(6);
-        if(finded != null){
-            System.out.println(finded);
-        } else {
-            System.out.println("No existe el estudiante en la base de datos.");
+            return true;
+        }catch(Exception e){
+            System.out.println("Error al agregar estudiante: " + e.getMessage());
         }
 
+        finally{
+            try{
+                conn.close();
+            }catch(Exception e){
+                System.out.println("Error al cerrar la conexion de base de datos: "+ e.getMessage());
+            }
+        }
 
-        //students.forEach(System.out::println);
+        return false;
+    }
+
+    public Student modifyStudent(Student student){
+        PreparedStatement ps;
+        Connection conn = DbConnection.getConnection();
+
+        String sqlScript = "UPDATE student SET name= ?, last_name = ?, phonenumber = ?, email = ? WHERE id_student = ?";
+
+        try{
+            ps = conn.prepareStatement(sqlScript);
+            ps.setString(1, student.getName());
+            ps.setString(2, student.getLast_name());
+            ps.setString(3,student.getPhonenumber());
+            ps.setString(4,student.getEmail());
+            ps.setInt(5, student.getId_student());
+            ps.execute();
+            return student;
+        }catch(Exception e){
+            System.out.println("Error al actualizar el estudiante: " + e.getMessage());
+        }
+
+        finally{
+            try{
+                conn.close();
+            }catch(Exception e){
+                System.out.println("Error al cerrar la conexion de la base de datos: "+ e.getMessage());
+            }
+        }
+
+        student = null;
+        return student;
+    }
+
+    public boolean deleteStudent(int id){
+        PreparedStatement ps;
+        Connection conn = DbConnection.getConnection();
+
+        String strId = String.valueOf(id);
+        String sqlScript = "DELETE FROM student WHERE id_student = " + strId;
+        try{
+            ps = conn.prepareStatement(sqlScript);
+            ps.execute();
+
+            return true;
+        }catch(Exception e){
+            System.out.println("Error al eliminar el estudiante: "+ e.getMessage());
+        }
+
+        finally{
+            try{
+                conn.close();
+            }catch(Exception e){
+                System.out.println("Error al cerrar conexion con la base de datos: " + e.getMessage());
+            }
+        }
+        return false;
     }
 }
